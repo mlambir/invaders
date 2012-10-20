@@ -2,6 +2,7 @@ var player;
 var enemies;
 var canvas;
 var context;
+var explosions;
 var info_tag;
 var bullets;
 var fps;
@@ -30,6 +31,8 @@ function setup() {
     }
     jaws.on_keydown("esc", setup);
     jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
+
+    explosions = new jaws.SpriteList();
 }
 
 var gun_cooldown = 300;
@@ -50,13 +53,17 @@ function update() {
     }
 
     bullets.update();
-    //enemies.update();
+    explosions.update();
+
+    explosions.removeIf(function(ex){return ex.frame > ex.frames;})
 
     forceInsideCanvas(player);
     bullets.removeIf(isOutsideCanvas);
 
+
     jaws.collideManyWithMany(bullets, enemies).forEach(function(el){
         bullets.remove(el[0]);
+        explosions.push(new Explosion(context, el[1]));
         enemies.remove(el[1]);
     });
 }
@@ -68,6 +75,7 @@ function draw() {
     player.draw();
     bullets.draw();  // will call draw() on all items in the list
     enemies.draw();
+    explosions.draw();
 
     info_tag.innerHTML = "FPS: " + jaws.game_loop.fps + " Player position: " + player.x + "/" + player.y + ". W/H: " + canvas.width + "/" + canvas.height;
     fps.innerHTML = jaws.game_loop.fps
@@ -169,5 +177,28 @@ function Bullet(options) {
 
 Bullet.prototype = new DynamicSprite({});
 Bullet.prototype.constructor = Bullet;
+
+function Explosion(ctx, sprite){
+    this.ctx = ctx;
+    this.image = sprite.asCanvas();
+
+    this.frame = 0;
+    this.frames = 20;
+
+    this.width = sprite.rect().width;
+    this.height= sprite.rect().height;
+    this.x = sprite.x - this.width/2;
+    this.y = sprite.y - this.height/2;
+
+    this.update = function(){
+        this.frame++;
+        this.y++;
+    }
+
+    this.draw = function(){
+        context.drawImage(this.image, this.x, this.y);
+
+    }
+}
 
 jaws.start();  // Per default this will load assets, call setup(), then loop update() and draw() in 60 FPS.
