@@ -183,7 +183,7 @@ function Explosion(ctx, sprite){
     this.image = sprite.asCanvas();
 
     this.frame = 0;
-    this.frames = 20;
+    this.frames = 10;
 
     this.width = sprite.rect().width;
     this.height= sprite.rect().height;
@@ -192,11 +192,30 @@ function Explosion(ctx, sprite){
 
     this.update = function(){
         this.frame++;
-        this.y++;
     }
 
     this.draw = function(){
-        context.drawImage(this.image, this.x, this.y);
+
+        context.globalAlpha = 1 - this.frame/this.frames;
+
+        var h = this.height;
+        var w = this.width;
+        var x = this.x;
+        var y = this.y;
+        var f = this.frame;
+        var fs = this.frames;
+
+        context.drawImage(this.image, 0, 0, w/2, h/2,
+                          x-f, y-f, w/2, h/2);
+
+        context.drawImage(this.image, w/2, 0, w/2, h/2,
+                          x+f+w/2, y-f, w/2, h/2);
+
+        context.drawImage(this.image, 0, h/2, w/2, h/2,
+                          x-f, y+f+h/2, w/2, h/2);
+
+        context.drawImage(this.image, w/2, h/2, w/2, h/2,
+                          x+f+w/2, y+f+h/2, w/2, h/2);
 
     }
 }
