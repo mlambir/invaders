@@ -20,13 +20,20 @@ function setup() {
     //new jaws.Sprite({image: "img/plane.png", x: canvas.width/2, y:canvas.height-30, context: context});
 
     enemies = new jaws.SpriteList();
-    var enemies_x = 6
-    for(var i = 0; i< enemies_x; i++){
-        enemies.push(new Enemy({x:(jaws.width/(enemies_x+1) )*(i+1), y:20}));
+    var enemies_x = 6;
+    var enemies_y = 4;
+
+    for(var i = 0; i < enemies_x; i++){
+        for(var j = 0; j < enemies_y; j++){
+            enemies.push(new Enemy({x:(jaws.width/(enemies_x+1) )*(i+1), y: 20 + 15 * j}));
+        }
     }
     jaws.on_keydown("esc", setup);
     jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
 }
+
+var gun_cooldown = 300;
+var last_shot = 0;
 
 /* step1. execute the game logic */
 function update() {
@@ -35,14 +42,18 @@ function update() {
     //if(jaws.pressed("up"))    { player.y -= 2 }
     //if(jaws.pressed("down"))  { player.y += 2 }
     if(jaws.pressed("space")) {
-        bullets.push( new Bullet({x:player.rect().x + player.rect().width/2, y:player.y}) )
+        var t = new Date().getTime();
+        if(t-gun_cooldown > last_shot){
+            bullets.push( new Bullet({x:player.rect().x + player.rect().width/2, y:player.y}) );
+            last_shot=t;
+        }
     }
 
     bullets.update();
     //enemies.update();
 
     forceInsideCanvas(player);
-    bullets.removeIf(isOutsideCanvas)
+    bullets.removeIf(isOutsideCanvas);
 
     jaws.collideManyWithMany(bullets, enemies).forEach(function(el){
         bullets.remove(el[0]);
