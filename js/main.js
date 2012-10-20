@@ -1,4 +1,5 @@
 var player;
+var enemies;
 var canvas;
 var context;
 var info_tag;
@@ -17,6 +18,12 @@ function setup() {
 
     player = new Spaceship({x: canvas.width/2 +.5, y:canvas.height-15, context: context});
     //new jaws.Sprite({image: "img/plane.png", x: canvas.width/2, y:canvas.height-30, context: context});
+
+    enemies = new jaws.SpriteList();
+    var enemies_x = 6
+    for(var i = 0; i< enemies_x; i++){
+        enemies.push(new Enemy({x:(jaws.width/(enemies_x+1) )*(i+1), y:20}));
+    }
     jaws.on_keydown("esc", setup);
     jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
 }
@@ -32,9 +39,15 @@ function update() {
     }
 
     bullets.update();
+    //enemies.update();
 
     forceInsideCanvas(player);
     bullets.removeIf(isOutsideCanvas)
+
+    jaws.collideManyWithMany(bullets, enemies).forEach(function(el){
+        bullets.remove(el[0]);
+        enemies.remove(el[1]);
+    });
 }
 
 /* step2. draw the update state on screen */
@@ -43,6 +56,7 @@ function draw() {
 
     player.draw();
     bullets.draw();  // will call draw() on all items in the list
+    enemies.draw();
 
     info_tag.innerHTML = "FPS: " + jaws.game_loop.fps + " Player position: " + player.x + "/" + player.y + ". W/H: " + canvas.width + "/" + canvas.height;
     fps.innerHTML = jaws.game_loop.fps
@@ -99,6 +113,26 @@ function Spaceship(options) {
 Spaceship.prototype = new DynamicSprite({});
 Spaceship.prototype.constructor = Spaceship;
 
+function Enemy(options) {
+    var width = 15;
+    var height = 10;
+
+    this.draw_sprite = function(context){
+        context.beginPath();
+        context.moveTo(0, 0);
+        context.lineTo(width, 0);
+        context.lineTo(width/2, height);
+        context.closePath();
+        context.lineWidth = 1;
+        context.strokeStyle = STROKE_COLOR;
+        context.stroke();
+    };
+
+    DynamicSprite.call(this, options, width, height);
+}
+
+Enemy.prototype = new DynamicSprite({});
+Enemy.prototype.constructor = Enemy;
 
 function Bullet(options) {
     var width = 1;
@@ -116,7 +150,7 @@ function Bullet(options) {
     };
 
     this.update = function(){
-        this.move(0, -1);
+        this.move(0, -2);
     };
 
     DynamicSprite.call(this, options, width, height);
@@ -125,5 +159,4 @@ function Bullet(options) {
 Bullet.prototype = new DynamicSprite({});
 Bullet.prototype.constructor = Bullet;
 
-jaws.assets.add("img/plane.png");
 jaws.start();  // Per default this will load assets, call setup(), then loop update() and draw() in 60 FPS.
