@@ -95,8 +95,8 @@ textarea {
 
 
 #gameCanvas{
-    background: #696969;
-    margin: 50px auto;
+    background: #333;
+    margin: 0 auto;
     display: block;
     width:768px;
 }

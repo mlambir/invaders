@@ -4,15 +4,16 @@ var canvas;
 var context;
 var explosions;
 var info_tag;
-var bullets;
+var my_bullets;
+var enemy_bullets;
 var fps;
 
 var enemies_dir = 1;
-var enemies_x = 6;
-var enemies_y = 4;
+var enemies_x = 8;
+var enemies_y = 5;
 
 
-var STROKE_COLOR = "#CCC";
+var STROKE_COLOR = "#DDD";
 
 function isInsideCanvas(item){
     return !(item.rect().x < 0 || item.rect().right > jaws.width || item.rect().y < 0 || item.rect.bottom > jaws.height);
@@ -20,7 +21,8 @@ function isInsideCanvas(item){
 
 /* step0. set everything up, load sprites etc. */
 function setup() {
-    bullets = new jaws.SpriteList();
+    my_bullets = new jaws.SpriteList();
+    enemy_bullets = new jaws.SpriteList();
     fps = document.getElementById("fps");
     info_tag = document.getElementsByTagName('info');
 
@@ -55,14 +57,14 @@ function update() {
     if(jaws.pressed("space")) {
         var t = new Date().getTime();
         if(t-gun_cooldown > last_shot){
-            bullets.push( new Bullet({x:player.rect().x + player.rect().width/2, y:player.y}) );
+            my_bullets.push( new Bullet({x:player.rect().x + player.rect().width/2, y:player.y}, 0, -2 ));
             last_shot=t;
         }
     }
 
-    bullets.update();
+    my_bullets.update();
+    enemy_bullets.update();
     explosions.update();
-    enemies.update();
 
     var updated_dir = false;
     enemies.forEach(function(enemy){
@@ -77,18 +79,28 @@ function update() {
         });
     }
 
+    enemies.update();
+
 
     explosions.removeIf(function(ex){return ex.frame > ex.frames;});
 
     forceInsideCanvas(player);
-    bullets.removeIf(isOutsideCanvas);
+    my_bullets.removeIf(isOutsideCanvas);
+    enemy_bullets.removeIf(isOutsideCanvas);
 
-
-    jaws.collideManyWithMany(bullets, enemies).forEach(function(el){
-        bullets.remove(el[0]);
+    jaws.collideManyWithMany(my_bullets, enemies).forEach(function(el){
+        my_bullets.remove(el[0]);
         explosions.push(new Explosion(el[1]));
         enemies.remove(el[1]);
     });
+
+    jaws.collideOneWithMany(player, enemies).forEach(function(){
+        setup();
+    });
+    jaws.collideOneWithMany(player, enemy_bullets).forEach(function(){
+        setup();
+    });
+
 }
 
 /* step2. draw the update state on screen */
@@ -96,7 +108,8 @@ function draw() {
     jaws.clear();        // Same as: context.clearRect(0,0,jaws.width,jaws.height)
 
     player.draw();
-    bullets.draw();  // will call draw() on all items in the list
+    my_bullets.draw();  // will call draw() on all items in the list
+    enemy_bullets.draw();
     enemies.draw();
     explosions.draw();
 
@@ -173,8 +186,21 @@ function Enemy(options) {
     this.update = function(){
         var n_enemies = enemies_x * enemies_y;
         var enemies_speed = 2 - 1.75 * (enemies.length/n_enemies);
-        console.log(enemies_speed);
         this.x = this.x + enemies_dir * enemies_speed;
+
+        var left = this.rect().x;
+        var y = this.y;
+        var right = this.rect().right;
+
+        var collisions = enemies.filter(function(item) {
+            return item.y > y && item.x > left && item.x < right;
+        });
+
+        if(collisions.length == 0){
+            if(Math.random() < .01){
+                enemy_bullets.push( new Bullet({x:this.rect().x + this.rect().width/2, y:this.y}, 0, 2 ));
+            }
+        }
     };
 
     DynamicSprite.call(this, options, width, height);
@@ -183,7 +209,7 @@ function Enemy(options) {
 Enemy.prototype = new DynamicSprite({});
 Enemy.prototype.constructor = Enemy;
 
-function Bullet(options) {
+function Bullet(options, x_direction, y_direction) {
     var width = 1;
     var height = 2;
 
@@ -199,7 +225,7 @@ function Bullet(options) {
     };
 
     this.update = function(){
-        this.move(0, -2);
+        this.move(x_direction, y_direction);
     };
 
     DynamicSprite.call(this, options, width, height);
