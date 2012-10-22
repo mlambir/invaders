@@ -172,6 +172,8 @@ function Enemy(options) {
     var width = 15;
     var height = 10;
 
+    var color = ["#FF66FF", "#66FFFF", "#FFFF66"][_.random(2)];
+
     this.draw_sprite = function(context){
         context.beginPath();
         context.moveTo(0, 0);
@@ -179,7 +181,7 @@ function Enemy(options) {
         context.lineTo(width/2, height);
         context.closePath();
         context.lineWidth = 1;
-        context.strokeStyle = STROKE_COLOR;
+        context.strokeStyle = color;
         context.stroke();
     };
 
