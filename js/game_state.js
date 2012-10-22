@@ -17,10 +17,18 @@ function isInsideCanvas(item){
 }
 function isOutsideCanvas(item) { return !isInsideCanvas(item) }
 function forceInsideCanvas(item) {
-    if(item.x < 0)                    { item.x = 0  }
-    if(item.x + item.width > jaws.width)     { item.x = jaws.width - item.width }
-    if(item.y < 0)                    { item.y = 0 }
-    if(item.y + item.height  > jaws.height)  { item.y = jaws.height - item.height }
+    if(item.rect().x < 0){
+        item.x = item.width/2
+    }
+    if(item.rect().right > jaws.width){
+        item.x = jaws.width - item.width/2
+    }
+    if(item.rect().y < 0){
+        item.y = item.height/2
+    }
+    if(item.rect().bottom > jaws.height){
+        item.y = jaws.height - item.height/2
+    }
 }
 
 function MainGameState(){
