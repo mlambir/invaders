@@ -10,7 +10,17 @@ var enemies_dir = 1;
 var enemies_x = 8;
 var enemies_y = 5;
 
+var enemy_margin = 20;
+
 var STROKE_COLOR = "#DDD";
+
+var enemy_shape = [
+    "011000000000000000".split(""),
+    "100001110000001110".split(""),
+    "110101010101001100".split(""),
+    "100101110101000110".split(""),
+    "100100010111001110".split("")
+]
 
 function isInsideCanvas(item){
     return !(item.rect().x < 0 || item.rect().right > jaws.width || item.rect().y < 0 || item.rect.bottom > jaws.height);
@@ -51,13 +61,17 @@ function MainGameState(){
 
         enemies = new jaws.SpriteList();
 
+        enemies_x = enemy_shape[0].length;
+        enemies_y = enemy_shape.length;
+
         for(var i = 0; i < enemies_x; i++){
             for(var j = 0; j < enemies_y; j++){
-                enemies.push(new Enemy({x:(jaws.width/(enemies_x+1) )*(i+1), y: 20 + 15 * j}));
+                if(enemy_shape[j][i] == "1")
+                enemies.push(new Enemy({x:((jaws.width - enemy_margin *2)/(enemies_x+1))*(i+1)+enemy_margin, y: 20 + 15 * j}));
             }
         }
 
-        jaws.on_keydown("esc", function(){jaws.start(ShowTextState, {}, {title:"Fiqus Invaders!", other:"apreta espacio para iniciar"});});
+        jaws.on_keydown("esc", function(){jaws.start(ShowTextState, {}, {title:"Fiqus Invaders!", iesother:"apreta espacio para iniciar"});});
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
 
         explosions = new jaws.SpriteList();
@@ -252,8 +266,8 @@ function random_enemy(context, width, height, color){
 }
 
 function Enemy(options) {
-    var width = 16;
-    var height = 12;
+    var width = 10;
+    var height = 10;
 
     var color = ["#FF66FF", "#66FFFF", "#FFFF66"][_.random(2)];
 
