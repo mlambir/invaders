@@ -57,7 +57,7 @@ function update() {
     if(jaws.pressed("space")) {
         var t = new Date().getTime();
         if(t-gun_cooldown > last_shot){
-            my_bullets.push( new Bullet({x:player.rect().x + player.rect().width/2, y:player.y}, 0, -2 ));
+            my_bullets.push( new Bullet({x:player.rect().x + player.rect().width/2, y:player.y}, 0, -2, "white" ));
             last_shot=t;
         }
     }
@@ -168,14 +168,13 @@ function Spaceship(options) {
 Spaceship.prototype = new DynamicSprite({});
 Spaceship.prototype.constructor = Spaceship;
 
-function random_enemy(context, width, height){
+function random_enemy(context, width, height, color){
     var tmpCanvas = document.createElement("canvas");
     tmpCanvas.height = height;
     tmpCanvas.width = width/2;
 
     var ctx = tmpCanvas.getContext("2d");
 
-    var color = ["#FF66FF", "#66FFFF", "#FFFF66"][_.random(2)];
     ctx.fillStyle = color;
     ctx.strokeStyle = color;
 
@@ -243,9 +242,10 @@ function Enemy(options) {
     var width = 16;
     var height = 12;
 
+    var color = ["#FF66FF", "#66FFFF", "#FFFF66"][_.random(2)];
 
     this.draw_sprite = function(context){
-        random_enemy(context, width, height);
+        random_enemy(context, width, height, color);
     };
 
     this.update = function(){
@@ -263,7 +263,7 @@ function Enemy(options) {
 
         if(collisions.length == 0){
             if(Math.random() < .01){
-                enemy_bullets.push( new Bullet({x:this.rect().x + this.rect().width/2, y:this.y}, 0, 2 ));
+                enemy_bullets.push( new Bullet({x:this.rect().x + this.rect().width/2, y:this.y}, 0, 2, color ));
             }
         }
     };
@@ -274,18 +274,19 @@ function Enemy(options) {
 Enemy.prototype = new DynamicSprite({});
 Enemy.prototype.constructor = Enemy;
 
-function Bullet(options, x_direction, y_direction) {
-    var width = 1;
-    var height = 2;
+function Bullet(options, x_direction, y_direction, color) {
+    var width = 2;
+    var height = 6;
 
     this.draw_sprite = function(context){
         context.beginPath();
-        context.moveTo(.5, 0);
-        context.lineTo(.5,height);
-        context.closePath();
+        context.moveTo(2 ,0);
+        context.lineTo(0 ,2);
+        context.lineTo(2 ,4);
+        context.lineTo(0 ,6);
 
         context.lineWidth = 1;
-        context.strokeStyle = STROKE_COLOR;
+        context.strokeStyle = color;
         context.stroke();
     };
 
