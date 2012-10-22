@@ -93,12 +93,15 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+#fps{
+    font-family: 'SilkscreenNormal';
+}
 
 #gameCanvas{
     background: #333;
     margin: 0 auto;
     display: block;
-    width:768px;
+    width:512px;
 }
 
 

@@ -121,8 +121,8 @@ function MainGameState(){
         enemies.draw();
         explosions.draw();
 
-        info_tag.innerHTML = "FPS: " + jaws.game_loop.fps + " Player position: " + player.x + "/" + player.y + ". W/H: " + canvas.width + "/" + canvas.height;
-        fps.innerHTML = jaws.game_loop.fps
+        //info_tag.innerHTML = "FPS: " + jaws.game_loop.fps + " Player position: " + player.x + "/" + player.y + ". W/H: " + canvas.width + "/" + canvas.height;
+        //fps.innerHTML = jaws.game_loop.fps
     }
 }
 
