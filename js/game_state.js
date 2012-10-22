@@ -1,7 +1,5 @@
 var player;
 var enemies;
-var canvas;
-var context;
 var explosions;
 var info_tag;
 var my_bullets;
@@ -20,9 +18,9 @@ function isInsideCanvas(item){
 function isOutsideCanvas(item) { return !isInsideCanvas(item) }
 function forceInsideCanvas(item) {
     if(item.x < 0)                    { item.x = 0  }
-    if(item.x + item.width > canvas.width)     { item.x = canvas.width - item.width }
+    if(item.x + item.width > jaws.width)     { item.x = jaws.width - item.width }
     if(item.y < 0)                    { item.y = 0 }
-    if(item.y + item.height  > canvas.height)  { item.y = canvas.height - item.height }
+    if(item.y + item.height  > jaws.height)  { item.y = jaws.height - item.height }
 }
 
 function MainGameState(){
@@ -35,10 +33,12 @@ function MainGameState(){
         fps = document.getElementById("fps");
         info_tag = document.getElementsByTagName('info');
 
-        canvas = document.getElementsByTagName('canvas')[0];
-        context = canvas.getContext('2d');
+        this.canvas = document.getElementsByTagName('canvas')[0];
+        this.context = this.canvas.getContext('2d');
 
-        player = new Spaceship({x: canvas.width/2 +.5, y:canvas.height-15, context: context});
+        jaws.canvas = this.canvas;
+
+        player = new Spaceship({x: jaws.width/2 +.5, y:jaws.height-15, context: this.context});
         //new jaws.Sprite({image: "img/plane.png", x: canvas.width/2, y:canvas.height-30, context: context});
 
         enemies = new jaws.SpriteList();
@@ -49,7 +49,7 @@ function MainGameState(){
             }
         }
 
-        jaws.on_keydown("esc", start_game);
+        jaws.on_keydown("esc", function(){jaws.start(ShowTextState, {}, {title:"Fiqus Invaders!", other:"apreta espacio para iniciar"});});
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
 
         explosions = new jaws.SpriteList();
@@ -103,11 +103,15 @@ function MainGameState(){
             enemies.remove(el[1]);
         });
 
+        if(!enemies.length){
+            jaws.switchGameState(ShowTextState, {}, {title:"GANASTE!", other:"apreta espacio para iniciar"});
+        }
+
         jaws.collideOneWithMany(player, enemies).forEach(function(){
-            start_game()
+            jaws.switchGameState(ShowTextState, {}, {title:"GAME OVER!", other:"apreta espacio para iniciar"});
         });
         jaws.collideOneWithMany(player, enemy_bullets).forEach(function(){
-            start_game();
+            jaws.switchGameState(ShowTextState, {}, {title:"GAME OVER!", other:"apreta espacio para iniciar"});
         });
     }
 
@@ -116,7 +120,7 @@ function MainGameState(){
         jaws.clear();        // Same as: context.clearRect(0,0,jaws.width,jaws.height)
 
         player.draw();
-        my_bullets.draw();  // will call draw() on all items in the list
+        my_bullets.draw();  // will call draw() on all items in the lis
         enemy_bullets.draw();
         enemies.draw();
         explosions.draw();
@@ -318,7 +322,7 @@ function Explosion(sprite){
 
     this.draw = function(){
 
-        context.globalAlpha = 1 - this.frame/this.frames;
+        jaws.context.globalAlpha = 1 - this.frame/this.frames;
 
         var h = this.height;
         var w = this.width;
@@ -326,18 +330,19 @@ function Explosion(sprite){
         var y = this.y;
         var f = this.frame;
 
-        context.drawImage(this.image, 0, 0, w/2, h/2,
+        jaws.context.drawImage(this.image, 0, 0, w/2, h/2,
             x-f, y-f, w/2, h/2);
 
-        context.drawImage(this.image, w/2, 0, w/2, h/2,
+        jaws.context.drawImage(this.image, w/2, 0, w/2, h/2,
             x+f+w/2, y-f, w/2, h/2);
 
-        context.drawImage(this.image, 0, h/2, w/2, h/2,
+        jaws.context.drawImage(this.image, 0, h/2, w/2, h/2,
             x-f, y+f+h/2, w/2, h/2);
 
-        context.drawImage(this.image, w/2, h/2, w/2, h/2,
+        jaws.context.drawImage(this.image, w/2, h/2, w/2, h/2,
             x+f+w/2, y+f+h/2, w/2, h/2);
 
+        jaws.context.globalAlpha = 1;
     }
 }
 

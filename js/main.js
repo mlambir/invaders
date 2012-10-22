@@ -1,5 +1,5 @@
 function start_game(){
-    jaws.start(MainGameState);
+    jaws.switchGameState(MainGameState);
 }
 
-jaws.start(MainMenuState);
+jaws.start(ShowTextState, {}, {title:"Fiqus Invaders!", other:"apreta espacio para iniciar"});
