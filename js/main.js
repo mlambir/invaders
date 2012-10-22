@@ -226,7 +226,7 @@ function random_enemy(context, width, height){
     //eyes
     ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
-    ctx.arc(width/2 * (Math.random() *.75) +.25, _.random(1, head_size-1),1,0,Math.PI*2,true);
+    ctx.arc(width/2 * (Math.random() *.75) +.25, _.random(2, head_size-2),1,0,Math.PI*2,true);
     if(_.random(1))
         ctx.arc(_.random(width/4, width/2), _.random(0, head_size),1,0,Math.PI*2,true);
     ctx.fill();
