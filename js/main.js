@@ -168,21 +168,84 @@ function Spaceship(options) {
 Spaceship.prototype = new DynamicSprite({});
 Spaceship.prototype.constructor = Spaceship;
 
-function Enemy(options) {
-    var width = 15;
-    var height = 10;
+function random_enemy(context, width, height){
+    var tmpCanvas = document.createElement("canvas");
+    tmpCanvas.height = height;
+    tmpCanvas.width = width/2;
+
+    var ctx = tmpCanvas.getContext("2d");
 
     var color = ["#FF66FF", "#66FFFF", "#FFFF66"][_.random(2)];
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+
+    //head
+    var head_size = Math.floor(height * (Math.random()/4 +.5));
+    var head_points = [];
+    var npoints = _.random(6,8);
+
+
+    head_points.push({x:width/2, y:0});
+
+    for(var i = 0; i<npoints; i++){
+        head_points.push({x:(Math.random()/2) * (width/2), y: (head_size/(npoints-1)) * i });
+    }
+
+    head_points.push({x:width/2, y:head_size});
+
+    ctx.beginPath();
+    for(var i = 0; i<head_points.length; i++){
+        ctx.lineTo(head_points[i]["x"], head_points[i]["y"]);
+    }
+
+    ctx.closePath();
+    ctx.fill();
+
+    //arms
+    if(_.random(5)){
+        ctx.beginPath();
+        ctx.moveTo(width/2, head_size-1);
+        ctx.lineTo(width/4 * Math.random(), head_size- _.random(1,3));
+        ctx.lineTo(0, head_size- _.random(3,5));
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+    }
+
+    //legs
+    var nlegs = _.random(1,3);
+    for(var i = 0; i< nlegs; i++){
+        ctx.beginPath();
+        ctx.moveTo(width/2, head_size-1);
+        ctx.lineTo((width/2/nlegs) * i + _.random(-1,1), head_size + _.random(1,3));
+        ctx.lineTo((width/2/nlegs) * i + _.random(-1,1), head_size + (height - head_size ) / _.random(1,3));
+        //ctx.lineTo(0, head_size- _.random(3,5));
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    //eyes
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(width/2 * (Math.random() *.75) +.25, _.random(1, head_size-1),1,0,Math.PI*2,true);
+    if(_.random(1))
+        ctx.arc(_.random(width/4, width/2), _.random(0, head_size),1,0,Math.PI*2,true);
+    ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+
+    context.drawImage(tmpCanvas, 0,0);
+    context.save();
+    context.scale(-1, 1);
+    context.drawImage(tmpCanvas, -width, 0);
+    context.restore();
+}
+
+function Enemy(options) {
+    var width = 16;
+    var height = 12;
+
 
     this.draw_sprite = function(context){
-        context.beginPath();
-        context.moveTo(0, 0);
-        context.lineTo(width, 0);
-        context.lineTo(width/2, height);
-        context.closePath();
-        context.lineWidth = 1;
-        context.strokeStyle = color;
-        context.stroke();
+        random_enemy(context, width, height);
     };
 
     this.update = function(){
