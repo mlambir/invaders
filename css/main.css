@@ -93,15 +93,27 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+body{
+    background: url("../img/dark_wood.png") black;
+}
+
 #fps{
     font-family: 'SilkscreenNormal';
 }
 
+#gameContainer{
+    margin:20px;
+    display:block;
+    width:1108px;
+    height:1108px;
+    background: url("../img/tv.png") no-repeat;
+    background-position: center 0px;
+
+}
 #gameCanvas{
-    background: #333;
-    margin: 0 auto;
-    display: block;
-    width:512px;
+    margin-top: 185px;
+    margin-left: 230px;
+    width: 430px;
 }
 
 
