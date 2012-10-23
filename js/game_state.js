@@ -78,7 +78,7 @@ function MainGameState(){
 
         n_enemies = enemies.length;
 
-        jaws.on_keydown("esc", function(){jaws.start(ShowTextState, {}, {title:"Fiqus Invaders!", iesother:"apreta espacio para iniciar"});});
+        jaws.on_keydown("esc", function(){jaws.start(ShowTextState, {}, {title:"Fiqus Invaders!", other:"apreta espacio para iniciar"});});
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
 
         explosions = new jaws.SpriteList();
