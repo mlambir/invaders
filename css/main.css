@@ -102,7 +102,7 @@ body{
 }
 
 #gameContainer{
-    margin:20px;
+    margin:20px auto;
     display:block;
     width:1108px;
     height:1108px;
